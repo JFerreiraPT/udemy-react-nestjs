@@ -11,8 +11,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
+const auth_service_1 = require("./auth.service");
 const jwt_1 = require("@nestjs/jwt");
 const user_service_1 = require("./../user/user.service");
 const common_1 = require("@nestjs/common");
@@ -20,16 +32,18 @@ const bcrypt = require("bcryptjs");
 const Register_dto_1 = require("./models/Register.dto");
 const auth_guard_1 = require("./auth.guard");
 let AuthController = class AuthController {
-    constructor(userService, jwtService) {
+    constructor(userService, authService, jwtService) {
         this.userService = userService;
+        this.authService = authService;
         this.jwtService = jwtService;
     }
     async register(body) {
         if (body.password !== body.password_confirm) {
             throw new common_1.BadRequestException('Passwords do not match!');
         }
-        const passHashed = await bcrypt.hash(body.password, 12);
-        return this.userService.create(Object.assign(Object.assign({}, body), { password: passHashed }));
+        const { role_id } = body, data = __rest(body, ["role_id"]);
+        const passHashed = await bcrypt.hash(data.password, 12);
+        return this.userService.create(Object.assign(Object.assign({}, body), { role: { id: role_id }, password: passHashed }));
     }
     async login(email, password, response) {
         const user = await this.userService.login(email, password);
@@ -41,9 +55,9 @@ let AuthController = class AuthController {
         return user;
     }
     async authUser(request) {
-        const cookie = request.cookies['jwt'];
-        const data = await this.jwtService.verifyAsync(cookie);
-        return this.userService.findOne({ id: data['id'] });
+        return this.userService.findOne({
+            id: await this.authService.getAuthUser(request),
+        });
     }
     async logout(response) {
         response.clearCookie('jwt');
@@ -88,6 +102,7 @@ __decorate([
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [user_service_1.UserService,
+        auth_service_1.AuthService,
         jwt_1.JwtService])
 ], AuthController);
 exports.AuthController = AuthController;

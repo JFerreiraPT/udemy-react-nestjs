@@ -1,3 +1,4 @@
+import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './../user/user.service';
 import {
@@ -22,6 +23,7 @@ import { AuthGuard } from './auth.guard';
 export class AuthController {
   constructor(
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -31,8 +33,14 @@ export class AuthController {
       throw new BadRequestException('Passwords do not match!');
     }
 
-    const passHashed = await bcrypt.hash(body.password, 12);
-    return this.userService.create({ ...body, password: passHashed });
+    const { role_id, ...data } = body;
+
+    const passHashed = await bcrypt.hash(data.password, 12);
+    return this.userService.create({
+      ...body,
+      role: { id: role_id },
+      password: passHashed,
+    });
   }
 
   @Post('login')
@@ -59,11 +67,9 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('user')
   async authUser(@Req() request: Request) {
-    const cookie = request.cookies['jwt'];
-
-    const data = await this.jwtService.verifyAsync(cookie);
-
-    return this.userService.findOne({ id: data['id'] });
+    return this.userService.findOne({
+      id: await this.authService.getAuthUser(request),
+    });
   }
 
   @UseGuards(AuthGuard)

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const class_transformer_1 = require("class-transformer");
+const role_entity_1 = require("../../role/models/role.entity");
 const typeorm_1 = require("typeorm");
 let User = class User {
 };
@@ -35,6 +36,11 @@ __decorate([
     (0, class_transformer_1.Exclude)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => role_entity_1.Role),
+    (0, typeorm_1.JoinColumn)({ name: 'role_id' }),
+    __metadata("design:type", role_entity_1.Role)
+], User.prototype, "role", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)('users')
 ], User);

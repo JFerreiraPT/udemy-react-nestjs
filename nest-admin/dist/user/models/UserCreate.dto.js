@@ -16,16 +16,24 @@ class UserCreateDto {
 }
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], UserCreateDto.prototype, "first_name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], UserCreateDto.prototype, "last_name", void 0);
 __decorate([
     (0, class_validator_1.IsEmail)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], UserCreateDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], UserCreateDto.prototype, "role_id", void 0);
 exports.UserCreateDto = UserCreateDto;
 class UserUpdateDto extends (0, swagger_1.PartialType)(UserCreateDto) {
 }

@@ -18,24 +18,11 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./models/user.entity");
 const bcrypt = require("bcryptjs");
-let UserService = class UserService {
+const base_service_1 = require("../common/base-service/base.service");
+let UserService = class UserService extends base_service_1.BaseService {
     constructor(userRepository) {
+        super(userRepository);
         this.userRepository = userRepository;
-    }
-    async getall() {
-        return await this.userRepository.find();
-    }
-    async create(data) {
-        return this.userRepository.save(data);
-    }
-    async update(id, data) {
-        return this.userRepository.update(id, data);
-    }
-    async delete(id) {
-        return this.userRepository.delete(id);
-    }
-    async findOne(condition) {
-        return this.userRepository.findOne({ where: condition });
     }
     async login(email, password) {
         const user = await this.findOne({ email });

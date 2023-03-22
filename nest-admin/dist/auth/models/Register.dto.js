@@ -33,5 +33,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "password_confirm", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], RegisterDto.prototype, "role_id", void 0);
 exports.RegisterDto = RegisterDto;
 //# sourceMappingURL=Register.dto.js.map
